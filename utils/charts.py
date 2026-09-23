@@ -325,13 +325,16 @@ def create_choropleth(countries: pd.DataFrame, metric: str) -> go.Figure:
 
 
 def create_treemap(subcats: pd.DataFrame) -> go.Figure:
-    lim = float(np.nanmax(np.abs(subcats["Margin"]))) if len(subcats) else 0.3
-    fig = px.treemap(subcats, path=[px.Constant("All products"), "Category", "Sub-Category"],
+    df = subcats.copy()
+    df["_mlabel"] = df["Margin"].apply(
+        lambda v: "%.1f%%" % (float(v) * 100) if (v is not None and np.isfinite(float(v))) else "")
+    lim = float(np.nanmax(np.abs(df["Margin"].dropna()))) if df["Margin"].notna().any() else 0.3
+    fig = px.treemap(df, path=[px.Constant("All products"), "Category", "Sub-Category"],
                      values="Sales", color="Margin", color_continuous_scale=DIVERGING,
-                     range_color=[-lim, lim], custom_data=["Profit", "Margin"])
+                     range_color=[-lim, lim], custom_data=["Profit", "_mlabel"])
     fig.update_traces(
-        texttemplate="<b>%{label}</b><br>%{value:$,.3s}<br>%{color:.1%}",
-        hovertemplate="<b>%{label}</b><br>Sales %{value:$,.0f}<br>Margin %{color:.1%}<extra></extra>",
+        texttemplate="<b>%{label}</b><br>%{value:$,.3s}<br>%{customdata[1]}",
+        hovertemplate="<b>%{label}</b><br>Sales %{value:$,.0f}<br>Margin %{customdata[1]}<extra></extra>",
         marker=dict(line=dict(color="white", width=2)), root_color="#F4F7FC", tiling=dict(pad=3))
     _base(fig, height=440)
     fig.update_layout(coloraxis_colorbar=dict(thickness=10, outlinewidth=0, tickformat=".0%", title=dict(text="")))
