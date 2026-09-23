@@ -112,6 +112,7 @@ ui.insight_box(
                 int((deep_cells < 0).sum()), len(deep_cells), m.fmt_pp(other_spread).lstrip("+")),
     implication="The evidence is consistent with one root cause: there is no floor on how far a line can be discounted. "
                 "Because the deep-discount share is stable, the loss scales with growth - which is why margin stays flat.",
-    action="Introduce a discount ceiling (e.g. 20%) with approval for exceptions, and monitor deep-discount share as a "
-           "leading KPI. The dataset has no cost or competitor data, so validate price elasticity with a pilot first.",
+    action="Eliminate discounts above 50% immediately, then pilot a 20% ceiling with approval for exceptions in the two "
+           "heaviest-discounting markets before a global rollout, and monitor deep-discount share as a leading KPI. "
+           "The dataset has no cost or competitor data, so the pilot is what validates price elasticity.",
 )

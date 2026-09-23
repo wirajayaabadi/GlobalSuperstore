@@ -109,6 +109,6 @@ ui.insight_box(
         len(losers), low_margin["Market"], m.fmt_pct(low_margin["Margin"])),
     implication="Market underperformance lines up with discount intensity rather than with market size or segment mix "
                 "(association, not proof of causation).",
-    action="Put every loss-making country on a fix-or-exit review: re-price first, and re-assess market presence if "
-           "margin stays negative after the discount guardrail.",
+    action="Reprice the largest loss-making countries first instead of exiting them; market exit should only be "
+           "considered for countries still loss-making after two quarters under the discount ceiling.",
 )

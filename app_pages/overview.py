@@ -63,6 +63,7 @@ with c4:
             growth_txt, m.fmt_pct(tot["margin"]), m.fmt_pct(tot["deep_share"]), m.fmt_pct(tot["deep_margin"])),
         implication="Growth adds revenue but not profitability per dollar: the loss-making slice grows in step with the "
                     "healthy business, so each extra dollar of sales carries the same drag.",
-        action="Set a discount ceiling and an approval step for exceptions; see the root-cause and strategy pages for "
-               "the evidence and the priority actions.",
+        action="Phase the response: eliminate discounts above 50% now, pilot a 20% ceiling with approval for exceptions "
+               "in the heaviest-discounting markets, then scale globally if volume holds. See the root-cause and "
+               "strategy pages for the evidence and the full plan.",
     )

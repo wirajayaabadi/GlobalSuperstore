@@ -104,6 +104,11 @@ Every page ends with **Finding / Implication / Action**; the strategy page uses 
 Recommendation**. Text is generated from the filtered data, so headlines change with the filters. Language is
 associative ("is associated with", "consistent with") because the dataset has no experimental or cost data.
 
+The strategy page presents a phased response: (1) eliminate discounts above 50% and add margin, deep-discount share
+and discount exceptions to the monthly Board review; (2) pilot a 20% discount ceiling with approval for exceptions in
+the two heaviest-discounting markets; (3) reprice the largest loss-making countries and products instead of exiting or
+delisting; (4) scale the ceiling globally if the pilot retains at least 80% of volume, targeting a 15-18% margin.
+
 ## 7. Run locally
 
 ```bash
