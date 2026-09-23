@@ -1,0 +1,50 @@
+# Corporate light theme built on the brand palette
+# #2373F4 (primary) / #578EF5 / #65D0F4 / #F2F7A0 (highlight only)
+
+[server]
+runOnSave = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#2373F4"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F7FC"
+textColor = "#1E293B"
+linkColor = "#2373F4"
+borderColor = "#E2E8F0"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "10px"
+buttonRadius = "8px"
+
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+baseFontSize = 14
+baseFontWeight = 400
+headingFontSizes = ["30px", "24px", "18px", "16px", "14px", "12px"]
+headingFontWeights = [700, 700, 600, 600, 600, 500]
+linkUnderline = false
+
+blueColor = "#2373F4"
+greenColor = "#1F9D6B"
+redColor = "#D64550"
+orangeColor = "#D98E04"
+yellowColor = "#B9A400"
+grayColor = "#64748B"
+violetColor = "#578EF5"
+
+chartCategoricalColors = ["#2373F4", "#65D0F4", "#578EF5", "#1E3A8A", "#94A3B8", "#D64550", "#B9A400"]
+chartSequentialColors = ["#EFF5FE", "#D6E5FD", "#B8D1FB", "#94BAF9", "#6FA1F7", "#4B89F6", "#2373F4", "#1B5FCC", "#154AA0", "#0F3574"]
+
+dataframeBorderColor = "#E2E8F0"
+dataframeHeaderBackgroundColor = "#F4F7FC"
+
+[theme.sidebar]
+backgroundColor = "#F4F7FC"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1E293B"
+borderColor = "#E2E8F0"
+primaryColor = "#2373F4"
