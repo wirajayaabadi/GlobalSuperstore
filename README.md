@@ -14,7 +14,7 @@ Every number on screen is computed live from the dataset; nothing is estimated o
 | Date validity | All dates parse (dd-mm-yyyy); no ship date before order date |
 | Encoding | latin-1 (some product names contain accented characters) |
 | Identifier caveats | 25,035 Order IDs but 25,752 Order ID + date combinations; 1,590 Customer IDs for 795 names; 10,292 Product IDs for 3,788 names |
-| Shipping Cost | Present per line, but the data does not say whether it is already in Profit, so it is excluded from profit analysis |
+| Shipping Cost | Present per line, but the data does not say whether it is already in Profit, so it is never deducted from Profit. It is reported as a share of Sales (freight burden), a ratio of two observed columns that needs no such assumption |
 
 Variable roles: **time** (Order Date, Ship Date), **measures** (Sales, Profit, Quantity, Discount, Shipping Cost),
 **dimensions** (Market, Region, Country, Segment, Category, Sub-Category, Ship Mode, Order Priority),

@@ -44,6 +44,10 @@ pilot_names = " and ".join(pilot["Market"].tolist()) if len(pilot) else "the two
 top_losers = losers.head(4)
 top_losers_share = m.safe_div(top_losers["Profit"].sum(), losers["Profit"].sum())
 ship_spread = m.group_summary(df, "Ship Mode")["Margin"].pipe(lambda s: s.max() - s.min())
+ship_freight = m.shipping_summary(df, "Ship Mode")
+band_freight = m.shipping_summary(df, "Discount Band")
+burden_spread = ship_freight["ShipBurden"].max() - ship_freight["ShipBurden"].min()
+band_burden_spread = band_freight["ShipBurden"].max() - band_freight["ShipBurden"].min()
 cats = m.group_summary(df, "Category")
 weak_cat = cats.sort_values("Margin").iloc[0]
 weak_cat_rest = m.summarize(df[(df["Category"] == weak_cat["Category"]) & (~df["Deep Discount"])])
@@ -183,11 +187,15 @@ st.dataframe(plan, hide_index=True, column_config={
 with st.container(border=True):
     st.markdown(":material/block: **What we recommend not doing**")
     st.markdown(ui.md(
-        "- **Do not cut logistics to protect margin.** Ship mode moves margin by only %s.\n"
+        "- **Do not treat logistics as the fix for margin.** Freight is worth managing on its own merits - it costs "
+        "%s of sales more on the fastest delivery speed than the slowest - but it is charged at nearly the same rate "
+        "on profitable and loss-making lines (%s spread across discount bands), and margin varies by only %s across "
+        "delivery speeds. Cutting shipping would trim cost without touching the loss.\n"
         "- **Do not exit the %d loss-making countries as a group.** They lose money because of discounts, not because "
         "of their markets: on lines discounted 30%% or less every market earns %s to %s.\n"
         "- **Do not remove %s from the catalogue.** At normal prices (30%% off or less) the category earns a %s margin."
-        % (m.fmt_pp(ship_spread).lstrip("+"), len(losers), m.fmt_pct(split["Excluding deep discounts"].min()),
+        % (m.fmt_pp(burden_spread).lstrip("+"), m.fmt_pp(band_burden_spread).lstrip("+"),
+           m.fmt_pp(ship_spread).lstrip("+"), len(losers), m.fmt_pct(split["Excluding deep discounts"].min()),
            m.fmt_pct(split["Excluding deep discounts"].max()), weak_cat["Category"], m.fmt_pct(weak_cat_rest["margin"]))))
 
 with st.expander("Limitations and next analyses", icon=":material/info:"):
@@ -197,7 +205,8 @@ with st.expander("Limitations and next analyses", icon=":material/info:"):
         "- **No cost, competitor or campaign data.** We cannot see why discounts were granted (clearance, competition, "
         "key accounts).\n"
         "- **Shipping cost** is reported per line but the dataset does not state whether it is already deducted from "
-        "Profit or who bears it, so it is excluded from the profit analysis.\n"
+        "Profit or who bears it. It is therefore never subtracted from Profit; it is shown only as a share of sales, "
+        "which measures how freight-heavy each delivery speed is without assuming how Profit was built.\n"
         "- **Customer IDs are region-specific** (%s IDs for %s names), so customer-level metrics are not used.\n"
         "- **Next:** price-elasticity pilot, discount approval audit trail, customer-level profitability once IDs are "
         "consolidated." % ("{:,}".format(df["Customer ID"].nunique()), "{:,}".format(df["Customer Name"].nunique()))

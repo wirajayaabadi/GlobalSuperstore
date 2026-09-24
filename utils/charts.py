@@ -254,6 +254,23 @@ def create_factor_chart(summary: pd.DataFrame, label_col: str, overall: float) -
     return fig
 
 
+def create_shipping_burden_chart(summary: pd.DataFrame, label_col: str, overall: float) -> go.Figure:
+    s = summary.sort_values("ShipBurden")
+    fig = go.Figure(go.Bar(
+        y=s[label_col].astype(str), x=s["ShipBurden"], orientation="h", marker_color=CYAN,
+        text=[fmt_pct(v) for v in s["ShipBurden"]], textposition="outside", cliponaxis=False,
+        customdata=np.stack([s["ShipCost"], s["ShipPerLine"]], axis=-1),
+        hovertemplate="%{y}<br>Shipping %{x:.1%} of sales<br>Total %{customdata[0]:$,.0f}"
+                      "<br>%{customdata[1]:$,.2f} per line<extra></extra>"))
+    if np.isfinite(overall):
+        fig.add_vline(x=overall, line=dict(color=NAVY, dash="dot", width=1.5))
+    _base(fig, height=220)
+    fig.update_xaxes(tickformat=".0%", range=[0, max(float(s["ShipBurden"].max()), 0.05) * 1.35],
+                     showgrid=True, gridcolor=GRID)
+    fig.update_yaxes(showgrid=False)
+    return fig
+
+
 # ---------------------------------------------------------------- markets and products
 
 

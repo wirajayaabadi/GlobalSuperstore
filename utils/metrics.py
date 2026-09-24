@@ -177,6 +177,21 @@ def group_summary(df: pd.DataFrame, by) -> pd.DataFrame:
     return g.reset_index()
 
 
+def shipping_summary(df: pd.DataFrame, by) -> pd.DataFrame:
+    """Freight burden by dimension. Shipping Cost is reported per line, but the data does not
+    say whether Profit already nets it off, so burden is expressed as a share of Sales - a ratio
+    of two observed columns that needs no assumption about how Profit was built."""
+    g = df.groupby(by, observed=True).agg(
+        Sales=("Sales", "sum"), Profit=("Profit", "sum"),
+        ShipCost=("Shipping Cost", "sum"), Lines=("Sales", "size"),
+    )
+    g["ShipBurden"] = safe_div_series(g["ShipCost"], g["Sales"])
+    g["ShipPerLine"] = safe_div_series(g["ShipCost"], g["Lines"])
+    g["Margin"] = safe_div_series(g["Profit"], g["Sales"])
+    g["Line share"] = safe_div_series(g["Lines"], pd.Series(g["Lines"].sum(), index=g.index))
+    return g.reset_index()
+
+
 def discount_band_summary(df: pd.DataFrame) -> pd.DataFrame:
     g = df.groupby("Discount Band", observed=False).agg(
         Lines=("Sales", "size"), Sales=("Sales", "sum"), Profit=("Profit", "sum"),

@@ -87,29 +87,72 @@ with c4:
 
 # ---- alternative explanations checked
 ui.section("Alternative explanations checked",
-           "Operational and customer factors show far less margin variation than discount level does")
+           "Delivery speed changes what shipping costs, but freight is charged at much the same rate on profitable "
+           "and loss-making lines")
 ship = m.group_summary(df, "Ship Mode")
 prio = m.group_summary(df, "Order Priority")
 seg = m.group_summary(df, "Segment")
-f1, f2, f3 = st.columns(3)
-for col, data, label, key in ((f1, ship, "Ship Mode", "rc_ship"), (f2, prio, "Order Priority", "rc_prio"),
-                              (f3, seg, "Segment", "rc_seg")):
+ship_freight = m.shipping_summary(df, "Ship Mode")
+band_freight = m.shipping_summary(df, "Discount Band")
+company_burden = m.safe_div(df["Shipping Cost"].sum(), df["Sales"].sum())
+ship_margin_spread = ship["Margin"].max() - ship["Margin"].min()
+burden_spread = ship_freight["ShipBurden"].max() - ship_freight["ShipBurden"].min()
+band_burden_spread = band_freight["ShipBurden"].max() - band_freight["ShipBurden"].min()
+
+f1, f2 = st.columns(2)
+with f1:
+    ui.chart_card("Ship Mode: margin spread %s" % m.fmt_pp(ship_margin_spread).lstrip("+"),
+                  "Profit margin; dotted line = company margin",
+                  ch.create_factor_chart(ship, "Ship Mode", tot["margin"]), key="rc_ship",
+                  note="Margin varies by %s across delivery speeds, against %s across discount bands." % (
+                      m.fmt_pp(ship_margin_spread).lstrip("+"),
+                      m.fmt_pp(bands["Margin"].max() - bands["Margin"].min()).lstrip("+")))
+with f2:
+    fastest = ship_freight.sort_values("ShipBurden").iloc[-1]
+    cheapest = ship_freight.sort_values("ShipBurden").iloc[0]
+    ui.chart_card(
+        "Ship Mode: shipping costs %s of sales on %s vs %s on %s" % (
+            m.fmt_pct(fastest["ShipBurden"], 0), fastest["Ship Mode"],
+            m.fmt_pct(cheapest["ShipBurden"], 0), cheapest["Ship Mode"]),
+        "Shipping cost as a share of sales; dotted line = company average",
+        ch.create_shipping_burden_chart(ship_freight, "Ship Mode", company_burden), key="rc_ship_freight",
+        note="Freight is measured against sales because the data does not say whether Profit already nets shipping "
+             "off, so this needs no assumption about how Profit was built.")
+
+f3, f4 = st.columns(2)
+for col, data, label, key in ((f3, prio, "Order Priority", "rc_prio"), (f4, seg, "Segment", "rc_seg")):
     spread = data["Margin"].max() - data["Margin"].min()
     with col:
         ui.chart_card("%s: margin spread %s" % (label, m.fmt_pp(spread).lstrip("+")),
                       "Profit margin; dotted line = company margin", ch.create_factor_chart(data, label, tot["margin"]),
                       key=key)
+
 band_spread = bands["Margin"].max() - bands["Margin"].min()
-st.caption(ui.md("For comparison, the margin spread across discount bands is %s." % m.fmt_pp(band_spread).lstrip("+")))
+st.caption(ui.md(
+    "For comparison, the margin spread across discount bands is %s. Shipping burden is the mirror image: it varies by "
+    "%s across delivery speeds but only %s across discount bands, so freight is charged at much the same rate on "
+    "profitable and loss-making lines alike." % (
+        m.fmt_pp(band_spread).lstrip("+"), m.fmt_pp(burden_spread).lstrip("+"),
+        m.fmt_pp(band_burden_spread).lstrip("+"))))
 
 other_spread = max(d["Margin"].max() - d["Margin"].min() for d in (ship, prio, seg))
+if m._finite(tot["deep_margin"]) and tot["deep_share"] > 0:
+    freight_clause = ("Freight is the one operational factor that does vary - it costs %s of sales more on the "
+                      "fastest delivery speed than the slowest - but it is charged at nearly the same rate regardless "
+                      "of discount (%s spread across bands), so it cannot account for lines that lose %s cents per "
+                      "dollar." % (m.fmt_pp(burden_spread).lstrip("+"), m.fmt_pp(band_burden_spread).lstrip("+"),
+                                   "%.0f" % (abs(tot["deep_margin"]) * 100)))
+else:
+    freight_clause = ("Freight costs %s of sales more on the fastest delivery speed than the slowest, but varies by "
+                      "only %s across discount bands, so it is charged at much the same rate whatever the discount." % (
+                          m.fmt_pp(burden_spread).lstrip("+"), m.fmt_pp(band_burden_spread).lstrip("+")))
 ui.insight_box(
     title="Root-cause conclusion",
     finding="Margin falls as discount rises (%s correlation at line level). Deep-discount lines (>30%%) are "
             "%s of lines and net %s; %s of %s market x deep-discount cells are loss-making, while ship mode, priority "
-            "and segment move margin by at most %s." % (
+            "and segment move margin by at most %s. %s" % (
                 m.strength(r_line), m.fmt_pct(tot["deep_share"]), m.fmt_money(tot["deep_profit"]),
-                int((deep_cells < 0).sum()), len(deep_cells), m.fmt_pp(other_spread).lstrip("+")),
+                int((deep_cells < 0).sum()), len(deep_cells), m.fmt_pp(other_spread).lstrip("+"), freight_clause),
     implication="The evidence is consistent with one root cause: there is no floor on how far a line can be discounted. "
                 "Because the deep-discount share is stable, the loss scales with growth - which is why margin stays flat.",
     action="Eliminate discounts above 50% immediately, then pilot a 20% ceiling with approval for exceptions in the two "

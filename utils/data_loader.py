@@ -139,7 +139,8 @@ DATA_DICTIONARY = [
     ("Quantity", "Measure", "Units sold on the line", "Volume KPIs"),
     ("Discount", "Measure", "Discount rate applied (0 to 0.85)", "Pricing driver analysis"),
     ("Profit", "Measure", "Profit of the line (USD, can be negative)", "Profit and margin KPIs"),
-    ("Shipping Cost", "Measure", "Freight cost of the line (USD)", "Context only; not deducted from Profit"),
+    ("Shipping Cost", "Measure", "Freight cost of the line (USD)",
+     "Reported as a share of Sales; never deducted from Profit"),
     ("Order Priority", "Dimension", "Critical, High, Medium, Low", "Operational driver check"),
 ]
 
